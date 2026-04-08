@@ -33,7 +33,7 @@ template <typename T>
 void ConfigSet(const char *key, T value);
 
 // Target lib here
-#define targetLibName OBFUSCATE("libil2cpp.so")
+#define targetLibName OBFUSCATE("liblogic.so")
 
 Il2CppImage *g_Image = nullptr;
 std::vector<MethodInfo *> g_Methods;

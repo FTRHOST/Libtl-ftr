@@ -16,7 +16,7 @@ namespace logger
 
 #define __LOG_ALL__
 
-#define LOG_TAG "MXP"
+#define LOG_TAG "ftr"
 #ifdef __DEBUG__
     #ifdef __LOG_ALL__
         #define LOGD(...)                                                                                              \
