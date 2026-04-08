@@ -468,6 +468,81 @@ void on_init()
     LOGPTR(g_Methods.back()->methodPointer);
     LOGD("SORTED");
     LOGD("HOOKED!");
+
+    // MLBB Bypasses
+    hookMethodReturnBool("LoginCLibraryUtils", "mStaticIsSandBox", true);
+    hookMethodReturnBool("BattleStaticInit", "IsAdjustSandBox", true);
+    hookMethodReturnBool("FrameTimeRecorder", "mIsSandBoxMode", true);
+    hookMethodReturnBool("GameInit", "IsSandBoxIp", true);
+    hookMethodReturnBool("GameServerConfig", "m_bGSDKSandBox", true);
+    hookMethodReturnBool("GameServerConfig", "m_bAdjustSandBox", true);
+    hookMethodReturnBool("SDKCommon", "IsSandBox", true);
+    hookMethodReturnBool("TableStreamBase`5", "m_bCheckSandboxSubThreadParseData", true);
+    hookMethodReturnBool("TableStreamBase`5", "m_bAdjustSandBox", true);
+    hookMethodReturnBool("TableStreamGroupMgr", "m_bAdjustSandBox", true);
+    hookMethodReturnBool("LogicExtension", "IsAdjustSandBox", true);
+    hookMethodReturnBool("SDKReportModel", "isSandBox", true);
+    hookMethodReturnBool("CommonDownloadMgr", "IsSandBoxEnv", true);
+    hookMethodReturnBool("CommonDownloadMgr", "get_IsDebug", true);
+    hookMethodReturnBool("ModeVersionData", "CheckVersionInSandBox", true);
+    hookMethodReturnBool("GSDKCore", "bSandbox", true);
+    hookMethodReturnBool("SdkInit", "IsSandBox", true);
+    hookMethodReturnBool("RankHeroMgr", "bAllRoadSelectedAutoSandboxExchange", true);
+    hookMethodReturnBool("RankHeroMgr", " bOpenSandboxRoadExchangeAddition", true);
+    hookMethodReturnBool("Cmd_Account_ByteDance_Login_CS", "bSandbox", true);
+    hookMethodReturnBool("ModelControlInBattle", "IsEsportRuneEnable", true);
+    hookMethodReturnBool("SystemData", "m_bEsportPlayer", true);
+    hookMethodReturnBool("SystemData", "BUseEsportsEmblem", true);
+    hookMethodReturnBool("SystemSwitchData", "BEsportsEmblemOpen", true);
+    hookMethodReturnBool("ModelControlInBattle", "SystemSwitchData", true);
+    hookMethodReturnBool("LuaHelper", "IsGmServerRunning", true);
+    hookMethodReturnBool("LuaHelper", "IsGmServerForceOnline", true);
+    hookMethodReturnBool("LocalSwitchXml", "IsGM", true);
+
+    hookMethodReturnBool("BaseAgent", "IsGmRecordCommond", true);
+    hookMethodReturnBool("MapTypeData", "IsGMOpenBehaviac", true);
+
+    hookMethodReturnBool("IShowStruct_ISHOW_OnWildFactoryEnd", "bIsGM", true);
+    hookMethodReturnBool("UIVideo", "IsGMFloatWindow", true);
+    hookMethodReturnBool("UIGMLogin", "m_bEnable", true);
+
+    hookMethodReturnBool("NLLoadingUIAtlas", "_bGmLogin", true);
+    hookMethodReturnBool("NLLoadingUIAtlas", "bShouldEnableUIGMLogin", true);
+    hookMethodReturnBool("NLLoadingUIAtlas", "_bMLAccountLogin", true);
+    hookMethodReturnBool("LogicMacro", "UNITY_GM", true);
+
+    hookMethodReturnBool("ShowBattleControl", "get_m_bAutoStartGmServer", true);
+    hookMethodReturnBool("ShowBattleControl", "get_m_bStartGmClient", true);
+    hookMethodReturnBool("ShowBattleControl", "get_m_bLearnGMSkills", true);
+
+    hookMethodReturnBool("ChooseHeroMgr", "IsSkinUseable", true);
+    hookMethodReturnBool("ChooseHeroMgr", "BAutoTestMode", true);
+    hookMethodReturnBool("UIChooseHero", "CanSelectSkin", true);
+    hookMethodReturnBool("SystemData", "IsForbidSkin", false);
+    hookMethodReturnBool("SystemData", "IsActivityForbidHeros", false);
+
+    hookMethodReturnBool("ModelControlInBattle", "IsForbidUserDefineAIProto", false);
+    hookMethodReturnBool("SystemData", "IsForbidHeroInChooseHero", false);
+    hookMethodReturnBool("SystemData", "IsForbidNewHeroList", false);
+    hookMethodReturnBool("SystemData", "IsForbidHeros", false);
+    hookMethodReturnBool("SystemData", "IsForbidARHero", false);
+    hookMethodReturnBool("SystemData", "IsForbidARSkin", false);
+    hookMethodReturnBool("SystemData", "IsForbidHeadFrameForce", false);
+    hookMethodReturnBool("SystemData", "IsForbidHeroDisOrder", false);
+    hookMethodReturnBool("SystemData", "IsForbidShareHeroShare", false);
+    hookMethodReturnBool("SystemData", "IsForbidSkinNumTag", false);
+    hookMethodReturnBool("SystemData", "IsForbidHero1v1", false);
+    hookMethodReturnBool("SystemData", "IsForbidHeadFrame", false);
+    hookMethodReturnBool("SystemData", "IsForbidNameSkin", false);
+
+    hookMethodReturnBool("SystemData", "IsForbidNameColor", false);
+    hookMethodReturnBool("SystemData", "IsForbidRoomBorder", false);
+    hookMethodReturnBool("SystemData", "IsForbidDragonCrystal", false);
+    hookMethodReturnBool("SystemData", "IsForbidDragonCrystal626", false);
+
+    hookMethodReturnBool("SystemData", "IsForbidStatue", false);
+    hookMethodReturnBool("IBridge", "IsForbidHeroInChooseHero", false);
+    hookMethodReturnBool("IMobaPluginBridge", "IsForbidAsset", false);
 }
 
 // we will run our hacks in a new thread so our while loop doesn't block process main thread

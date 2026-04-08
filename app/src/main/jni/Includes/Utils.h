@@ -20,6 +20,9 @@ void patchOffsetSym(uintptr_t absolute_address, std::string hexBytes, bool isOn)
 
 void patchOffset(const char *fileName, uint64_t offset, std::string hexBytes, bool isOn);
 
+void hookMethodReturnBool(const char* className, const char* methodName, bool forceReturn);
+void hookMethodReturnInt(const char* className, const char* methodName, int forceReturn);
+
 namespace ToastLength
 {
     inline const int LENGTH_LONG = 1;
