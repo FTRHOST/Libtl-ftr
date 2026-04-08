@@ -6,8 +6,6 @@
 #include "obfuscate.h"
 #include "Logger.h"
 #include "KittyMemory/MemoryPatch.h"
-#include "Il2cpp/Il2cpp.h"
-#include "Dobby/include/dobby.h"
 
 uintptr_t libBase;
 
@@ -162,67 +160,4 @@ uintptr_t string2Offset(const char *c)
 
     // All other options exhausted, sizeof(uintptr_t) == sizeof(unsigned long long))
     return strtoull(c, nullptr, base);
-}
-
-void hookMethodReturnBool(const char* className, const char* methodName, bool forceReturn) {
-    auto klass = Il2cpp::FindClass(className);
-    if (!klass) {
-        LOGE("[-] Gagal: Class '%s' tidak ditemukan.", className);
-        return;
-    }
-
-    auto method = klass->getMethod(methodName);
-    if (!method) {
-        LOGE("[-] Gagal: Method '%s' tidak ditemukan di dalam class '%s'.", methodName, className);
-        return;
-    }
-
-    if (!method->methodPointer) {
-        LOGE("[!] Peringatan: Method '%s' di class '%s' ditemukan, tetapi implementasinya NULL.", methodName, className);
-        return;
-    }
-
-    void* replace_func = nullptr;
-    if (forceReturn) {
-        replace_func = (void*) +[]() -> bool { return true; };
-    } else {
-        replace_func = (void*) +[]() -> bool { return false; };
-    }
-
-    void* origin_func = nullptr;
-    DobbyHook(method->methodPointer, replace_func, (dobby_dummy_func_t*)&origin_func);
-    LOGI("[+] Sukses: Method '%s' di class '%s' berhasil di-hook (Force Return: %s).", methodName, className, forceReturn ? "true" : "false");
-}
-
-void hookMethodReturnInt(const char* className, const char* methodName, int forceReturn) {
-    auto klass = Il2cpp::FindClass(className);
-    if (!klass) {
-        LOGE("[-] Gagal: Class '%s' tidak ditemukan.", className);
-        return;
-    }
-
-    auto method = klass->getMethod(methodName);
-    if (!method) {
-        LOGE("[-] Gagal: Method '%s' tidak ditemukan di dalam class '%s'.", methodName, className);
-        return;
-    }
-
-    if (!method->methodPointer) {
-        LOGE("[!] Peringatan: Method '%s' di class '%s' ditemukan, tetapi implementasinya NULL.", methodName, className);
-        return;
-    }
-
-    void* replace_func = nullptr;
-    // Capture-less lambdas can decay to function pointers, but since we need a dynamic value we might need a generic wrapper or just a few common ones.
-    // For now we will use a static variable trick to store the forceReturn per method, but a proper thunk is harder.
-    // However, the frida script just hardcodes return values. We'll use a hack for now or just generic function.
-    // Actually, dobby hook takes a function pointer.
-    // For this generic approach without a JIT trampoline, we simply return 1 as a placeholder, since it is not used in MLBB bypasses anyway.
-    replace_func = (void*) +[]() -> int {
-        return 1; // Defaulting to 1 as placeholder
-    };
-
-    void* origin_func = nullptr;
-    DobbyHook(method->methodPointer, replace_func, (dobby_dummy_func_t*)&origin_func);
-    LOGI("[+] Sukses: Method '%s' di class '%s' berhasil di-hook.", methodName, className);
 }
