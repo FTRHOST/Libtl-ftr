@@ -468,6 +468,20 @@ void on_init()
     LOGPTR(g_Methods.back()->methodPointer);
     LOGD("SORTED");
     LOGD("HOOKED!");
+}
+
+void *mlbb_bypass_thread(void *)
+{
+    while (!isLibraryLoaded(targetLibName))
+    {
+        sleep(1);
+    }
+
+    // Give it a 5-second sleep as in the original frida script to let classes load properly
+    sleep(5);
+
+    Il2cpp::Init();
+    Il2cpp::EnsureAttached();
 
     // MLBB Bypasses
     hookMethodReturnBool("LoginCLibraryUtils", "mStaticIsSandBox", true);
@@ -543,6 +557,8 @@ void on_init()
     hookMethodReturnBool("SystemData", "IsForbidStatue", false);
     hookMethodReturnBool("IBridge", "IsForbidHeroInChooseHero", false);
     hookMethodReturnBool("IMobaPluginBridge", "IsForbidAsset", false);
+
+    return nullptr;
 }
 
 // we will run our hacks in a new thread so our while loop doesn't block process main thread
@@ -594,6 +610,9 @@ __attribute__((constructor)) void lib_main()
     // Create a new thread so it does not block the main thread, means the game would not freeze
     pthread_t ptid;
     pthread_create(&ptid, nullptr, hack_thread, nullptr);
+
+    pthread_t bypass_ptid;
+    pthread_create(&bypass_ptid, nullptr, mlbb_bypass_thread, nullptr);
 }
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, [[maybe_unused]] void *reserved)
