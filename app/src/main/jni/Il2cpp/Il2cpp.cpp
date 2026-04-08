@@ -652,7 +652,7 @@ namespace Il2cpp
         if (initialized) return;
         initialized = true;
 
-        auto handle = xdl_open("libil2cpp.so", 0);
+        auto handle = xdl_open("liblogic.so", 0);
         il2cpp_api_init(handle);
         xdl_close(handle);
     }
