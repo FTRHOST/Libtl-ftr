@@ -58,6 +58,9 @@ constexpr std::array<float, 7> scaleFactors = {0.25f, 0.5f, 0.75f, 1.0f, 1.25f, 
 ImGuiStyle initialStyle;
 
 const char *title = OBFUSCATE("IL2CPP Tool v0.9 By mIsmanXP @ Platinmods.com | Discord : @cat.ll");
+
+// Fungsi draw_thread() adalah fungsi yang dijalankan pada setiap frame ImGui.
+// Disini adalah tempat dimana logika rendering UI Mod Menu dijalankan.
 void draw_thread()
 {
     static ImVec2 lastSize = ImVec2(0, 0);
@@ -413,9 +416,13 @@ void ConfigInit()
     }
 }
 
+// Fungsi on_init() akan dipanggil ketika target library game (contoh: libil2cpp.so atau liblogic.so)
+// sudah termuat di dalam memori. Ini adalah entry point untuk melakukan inisialisasi hacking,
+// seperti memanggil Il2cpp::Init() untuk membaca struktur Il2Cpp, hook input, dan memuat class/method.
 void on_init()
 {
     LOGD(__FUNCTION__);
+    // Tunggu hingga target library game berhasil dimuat ke dalam memori.
     while (!isLibraryLoaded(targetLibName))
     {
         sleep(1);
@@ -473,8 +480,11 @@ void on_init()
     LOGD("HOOKED!");
 }
 
-// we will run our hacks in a new thread so our while loop doesn't block process main thread
+// Variabel penanda apakah inisialisasi ini dilakukan menggunakan Java atau Native.
 bool useJava = false;
+
+// Fungsi hack_thread() digunakan agar proses inisialisasi hack berjalan di thread terpisah.
+// Hal ini bertujuan agar thread utama (main thread) dari game tidak terblokir (freeze).
 void *hack_thread(void *)
 {
     logger::Clear();
@@ -517,13 +527,16 @@ extern "C"
         initModMenu((void *)draw_thread, (void *)on_init, useJava);
     }
 }
+// Atribut constructor memastikan bahwa fungsi lib_main() dipanggil sesaat setelah shared library (so) di-load.
 __attribute__((constructor)) void lib_main()
 {
-    // Create a new thread so it does not block the main thread, means the game would not freeze
+    // Membuat thread baru agar proses hacking tidak memblokir main thread game, sehingga game tidak akan freeze.
     pthread_t ptid;
     pthread_create(&ptid, nullptr, hack_thread, nullptr);
 }
 
+// Fungsi JNI_OnLoad() merupakan entry point utama ketika library dimuat oleh mesin Java (Android JNI).
+// Di dalam fungsi ini, inisialisasi dasar JNI dilakukan dan mengecek apakah terdapat class NativeMethods.
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, [[maybe_unused]] void *reserved)
 {
     JNIEnv *env;
