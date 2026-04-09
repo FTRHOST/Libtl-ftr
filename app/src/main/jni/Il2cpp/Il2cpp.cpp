@@ -648,7 +648,11 @@ namespace Il2cpp
 {
     void Init()
     {
-        auto handle = xdl_open("libil2cpp.so", 0);
+        static bool initialized = false;
+        if (initialized) return;
+        initialized = true;
+
+        auto handle = xdl_open("liblogic.so", 0);
         il2cpp_api_init(handle);
         xdl_close(handle);
     }
@@ -1362,7 +1366,7 @@ namespace Il2cpp
                 il2cpp_start_gc_world();
                 il2cpp_unity_liveness_free_struct(state);
             }
-            LOGD("Found %lu objects", objects.size());
+            LOGD("Found %zu objects", objects.size());
             return objects;
         }
         // is this function actually work?
@@ -1409,7 +1413,7 @@ namespace Il2cpp
                 }
 
                 auto indent = repeatString("│ ", depth++);
-                LOGD("%lu %s%s%s::%s", (uintptr_t)data->m->methodPointer - il2cpp_base, indent.c_str(), "┌─",
+                LOGD("%llu %s%s%s::%s", (unsigned long long)((uintptr_t)data->m->methodPointer - il2cpp_base), indent.c_str(), "┌─",
                      m->getClass()->getFullName().c_str(), m->getName());
             }
         }
@@ -1420,7 +1424,7 @@ namespace Il2cpp
             if (data->skip)
                 return;
             auto indent = repeatString("│ ", --depth);
-            LOGD("%lu %s%s%s::%s", (uintptr_t)data->m->methodPointer - il2cpp_base, indent.c_str(), "└─",
+            LOGD("%llu %s%s%s::%s", (unsigned long long)((uintptr_t)data->m->methodPointer - il2cpp_base), indent.c_str(), "└─",
                  data->m->getClass()->getFullName().c_str(), data->m->getName());
             // TODO: Improve this
             //  auto returnType = data->m->getReturnType()->getName();

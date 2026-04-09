@@ -1,0 +1,5 @@
+app/.cxx/
+.gradle/
+app/build/
+out/
+compile_commands.json
