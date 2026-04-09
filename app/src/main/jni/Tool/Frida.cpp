@@ -9,6 +9,8 @@
 extern int maxLine;
 extern std::vector<MethodInfo *> g_Methods;
 
+// Fungsi binarySearchClosest() bertugas untuk mencari method terdekat dari suatu pointer (alamat memory) tertentu.
+// Berguna untuk mengidentifikasi method apa yang berkaitan dengan return address yang tertangkap saat backtracing.
 MethodInfo *binarySearchClosest(const uintptr_t addr)
 {
     int left = 0;
@@ -36,6 +38,9 @@ MethodInfo *binarySearchClosest(const uintptr_t addr)
 }
 namespace Frida
 {
+    // Class TraceListener adalah implementasi InvocationListener dari frida-gum.
+    // Class ini digunakan sebagai listener untuk memantau kapan sebuah method dipanggil (on_enter)
+    // dan kapan selesai dieksekusi (on_leave). TraceListener juga mengurus sistem pencatatan (trace/backtrace) method tersebut.
     class TraceListener : public Gum::InvocationListener
     {
       private:

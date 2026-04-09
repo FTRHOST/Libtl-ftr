@@ -15,6 +15,9 @@ using namespace asmjit;
     #define ASSERR(error) (error)
 #endif
 
+// Class Patcher digunakan untuk memodifikasi atau 'mem-patch' (mengubah) perilaku dari suatu method.
+// Patcher ini menginisialisasi environment untuk asmjit sesuai arsitektur perangkat (AArch64 / ARM),
+// yang memungkinkan pembuatan instruksi assembly secara dinamis yang nantinya akan ditulis ke memory.
 Patcher::Patcher(MethodInfo *method) : target{method->methodPointer}
 {
     using namespace asmjit;
@@ -156,6 +159,8 @@ asmjit::Error Patcher::movPtr(void *value)
     return asmjit::kErrorOk;
 }
 
+// Fungsi patch() akan meng-compile dan mendapatkan bytes dari assembly yang dibuat,
+// kemudian byte tersebut akan di-inject/tulis ke alamat memory dari method target menggunakan KittyMemory::ProtectAddr dan memcpy.
 std::vector<uint8_t> Patcher::patch()
 {
     std::vector<char> bytes;

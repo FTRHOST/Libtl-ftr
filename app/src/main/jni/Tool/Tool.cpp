@@ -186,6 +186,8 @@ namespace Tool
 #endif
     }
 
+    // Fungsi Draw() digunakan untuk menggambar (render) antar muka Tab yang ada di Mod Menu (menggunakan ImGui).
+    // Fungsi ini menangani logika pengelolaan tab untuk memilih kelas dan method.
     void Draw()
     {
         [[maybe_unused]] static auto _ = []
@@ -232,6 +234,9 @@ namespace Tool
         }
     }
 
+    // Fungsi Dumper() bertanggung jawab dalam proses dumping.
+    // Tujuannya adalah untuk mendump informasi dari Il2Cpp ke dalam file .cs (C#)
+    // yang nantinya sangat berguna dalam reverse engineering dan analisis struktur game.
     void Dumper()
     {
         static std::string currentDump = "";
@@ -362,9 +367,11 @@ namespace Tool
         // }
     }
 
-    //-1 = Auto
-    // 0 = Off
-    // 1 = On
+    // Fungsi ToggleHooker() digunakan untuk mengaktifkan atau menonaktifkan hook pada suatu method tertentu.
+    // -1 = Auto toggle (Aktifkan jika belum hook, matikan jika sudah)
+    // 0 = Off (Matikan hook)
+    // 1 = On (Aktifkan hook)
+    // Mendukung pemakaian framework hook (Dobby / Frida) berdasarkan definisinya (USE_FRIDA).
     bool ToggleHooker(MethodInfo *method, int state)
     {
         bool patched = ClassesTab::oMap[method].bytes.empty() == false;
