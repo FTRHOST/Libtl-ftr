@@ -68,6 +68,7 @@ set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(LOCAL_SRC_FILES
         Main.cpp
         Menu/ImGui.cpp
+        Tool/AntiFrida.cpp
         Tool/Keyboard.cpp
         Tool/Tool.cpp
         Tool/Util.cpp

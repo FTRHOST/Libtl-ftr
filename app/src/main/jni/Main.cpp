@@ -16,6 +16,7 @@
 #include "sstream"
 #include "jni.h"
 #include "Tool/Unity.h"
+#include "Tool/AntiFrida.h"
 
 void logcatJson(nlohmann::ordered_json &json)
 {
@@ -132,6 +133,20 @@ void draw_thread()
     {
         ImGui::PopStyleVar();
     }
+
+    if (!AntiFrida::is_frida_detected)
+    {
+        ImGui::TextColored(ImVec4(0, 1, 0, 1), "[+] Security: Safe (No Frida PC Detected)");
+    }
+    else
+    {
+        ImGui::TextColored(ImVec4(1, 0, 0, 1), "[!] WARNING: FRIDA SERVER/CLIENT DETECTED!");
+        if (ImGui::Button("Force Crash/Exit Game"))
+        {
+            exit(0);
+        }
+    }
+    ImGui::Separator();
 
 #ifdef __DEBUG__
     static bool showDemoWindow = false;
@@ -530,6 +545,9 @@ extern "C"
 // Atribut constructor memastikan bahwa fungsi lib_main() dipanggil sesaat setelah shared library (so) di-load.
 __attribute__((constructor)) void lib_main()
 {
+    // Mulai memonitor Frida di background
+    AntiFrida::StartMonitor();
+
     // Membuat thread baru agar proses hacking tidak memblokir main thread game, sehingga game tidak akan freeze.
     pthread_t ptid;
     pthread_create(&ptid, nullptr, hack_thread, nullptr);
