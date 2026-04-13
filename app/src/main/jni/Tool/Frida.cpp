@@ -4,6 +4,9 @@
 #include "Il2cpp/Il2cpp.h"
 #include "Il2cpp/il2cpp-class.h"
 #include "Tool/Tool.h"
+#include <fstream>
+#include <sstream>
+#include <nlohmann/json.hpp>
 
 // extern std::unordered_map<void *, HookerData> hookerMap;
 extern int maxLine;
@@ -269,5 +272,98 @@ namespace Frida
     bool isTraced(MethodInfo *method)
     {
         return traceListeners.find(method->methodPointer) != traceListeners.end();
+    }
+
+    extern "C" {
+        typedef struct _GumScriptBackend GumScriptBackend;
+        typedef struct _GumScript GumScript;
+
+        __attribute__((weak)) GumScriptBackend *gum_script_backend_obtain_qjs(void);
+        __attribute__((weak)) GumScript *gum_script_backend_create_sync(GumScriptBackend *backend, const gchar *name, const gchar *source, gpointer cancellable, GError **error);
+        __attribute__((weak)) void gum_script_set_message_handler(GumScript *script, void (*handler)(const gchar *message, GBytes *data, gpointer user_data), gpointer data, gpointer data_destroy);
+        __attribute__((weak)) void gum_script_load_sync(GumScript *script, gpointer cancellable);
+    }
+
+    namespace ScriptManager
+    {
+        std::vector<std::string> frida_logs;
+        std::mutex log_mutex;
+        GumScriptBackend *backend = nullptr;
+
+        static void OnScriptMessage(const gchar *message, GBytes *data, gpointer user_data)
+        {
+            std::lock_guard<std::mutex> lock(log_mutex);
+
+            try {
+                auto j = nlohmann::json::parse(message);
+                if (j.contains("type") && j["type"] == "log") {
+                    std::string payload = j["payload"].get<std::string>();
+                    frida_logs.push_back("[Log] " + payload);
+                } else if (j.contains("type") && j["type"] == "error") {
+                    std::string description = j.contains("description") ? j["description"].get<std::string>() : "Unknown Error";
+                    frida_logs.push_back("[Error] " + description);
+                } else if (j.contains("type") && j["type"] == "send") {
+                    std::string payload = j["payload"].dump();
+                    frida_logs.push_back("[Send] " + payload);
+                } else {
+                    frida_logs.push_back(message);
+                }
+            } catch (const nlohmann::json::parse_error& e) {
+                frida_logs.push_back(message);
+            }
+        }
+
+        void InitGum()
+        {
+            gum_init_embedded();
+            if (gum_script_backend_obtain_qjs) {
+                backend = gum_script_backend_obtain_qjs(); // Use QuickJS as V8 is often excluded in lean builds
+            }
+        }
+
+        bool LoadScriptFromRawCode(const std::string& source)
+        {
+            if (!gum_script_backend_create_sync) {
+                std::lock_guard<std::mutex> lock(log_mutex);
+                frida_logs.push_back("[System Error] GumScriptBackend is not available in the linked frida library.");
+                return false;
+            }
+            if (!backend) return false;
+
+            GError *error = nullptr;
+            GumScript *script = gum_script_backend_create_sync(backend, "script", source.c_str(), nullptr, &error);
+
+            if (error) {
+                std::lock_guard<std::mutex> lock(log_mutex);
+                frida_logs.push_back("[Error Compiling Script] " + std::string(error->message));
+                g_error_free(error);
+                return false;
+            }
+
+            gum_script_set_message_handler(script, OnScriptMessage, nullptr, nullptr);
+            gum_script_load_sync(script, nullptr);
+
+            return true;
+        }
+
+        bool LoadScriptFromFile(const std::string& filepath)
+        {
+            std::ifstream file(filepath);
+            if (!file.is_open()) {
+                std::lock_guard<std::mutex> lock(log_mutex);
+                frida_logs.push_back("[System Error] Failed to open file: " + filepath);
+                return false;
+            }
+
+            std::stringstream buffer;
+            buffer << file.rdbuf();
+            return LoadScriptFromRawCode(buffer.str());
+        }
+
+        void ClearLogs()
+        {
+            std::lock_guard<std::mutex> lock(log_mutex);
+            frida_logs.clear();
+        }
     }
 } // namespace Frida
