@@ -323,12 +323,11 @@ namespace Frida
 
         bool LoadScriptFromRawCode(const std::string& source)
         {
-            if (!gum_script_backend_create_sync) {
+            if (!gum_script_backend_create_sync || !backend) {
                 std::lock_guard<std::mutex> lock(log_mutex);
                 frida_logs.push_back("[System Error] GumScriptBackend is not available in the linked frida library.");
                 return false;
             }
-            if (!backend) return false;
 
             GError *error = nullptr;
             GumScript *script = gum_script_backend_create_sync(backend, "script", source.c_str(), nullptr, &error);
