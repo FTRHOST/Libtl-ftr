@@ -241,6 +241,46 @@ void draw_thread()
             Tool::Dumper();
             ImGui::EndTabItem();
         }
+        if (ImGui::BeginTabItem("Saved Patches"))
+        {
+            ImGui::BeginChild("SavedPatchesList", ImVec2(0, 0), ImGuiChildFlags_None, ImGuiWindowFlags_HorizontalScrollbar);
+            for (auto it = Tool::savedPatches.begin(); it != Tool::savedPatches.end(); )
+            {
+                auto& patch = *it;
+                ImGui::PushID(patch.methodName.c_str());
+                ImGui::Text("%s::%s (%zu) -> %s", patch.className.c_str(), patch.methodName.c_str(), patch.argsCount, patch.patchText.c_str());
+                ImGui::SameLine();
+                if (ImGui::Button("Remove"))
+                {
+                    // Find the method and restore
+                    auto image = Il2cpp::GetImage(patch.imageName.c_str());
+                    if (image)
+                    {
+                        auto klass = image->getClass(patch.className.c_str());
+                        if (klass)
+                        {
+                            auto method = klass->getMethod(patch.methodName.c_str(), patch.argsCount);
+                            if (method && !ClassesTab::oMap[method].bytes.empty())
+                            {
+                                memcpy(method->methodPointer, ClassesTab::oMap[method].bytes.data(), ClassesTab::oMap[method].bytes.size());
+                                ClassesTab::oMap[method].bytes.clear();
+                                ClassesTab::oMap[method].text.clear();
+                            }
+                        }
+                    }
+                    it = Tool::savedPatches.erase(it);
+                    Tool::SavePatches();
+                }
+                else
+                {
+                    ++it;
+                }
+                ImGui::PopID();
+                ImGui::Separator();
+            }
+            ImGui::EndChild();
+            ImGui::EndTabItem();
+        }
         if (ImGui::BeginTabItem("Settings"))
         {
             ImGui::Separator();
@@ -457,6 +497,9 @@ void on_init()
     g_Image = Il2cpp::GetAssembly("Assembly-CSharp")->getImage();
     auto images = Il2cpp::GetImages();
     Tool::Init(g_Image, images);
+
+    Tool::LoadPatches();
+    Tool::ApplySavedPatches();
 
     for (auto image : images)
     {

@@ -3,6 +3,7 @@
 #include "Tool/Frida.h"
 #include "Tool/Keyboard.h"
 #include "Tool/Util.h"
+#include "Tool/Patcher.h"
 #include "imgui/imgui.h"
 #include <future>
 #include <set>
@@ -22,8 +23,27 @@ std::vector<Il2CppImage *> g_Images;
 CircularBuffer<HookerTrace> HookerData::visited{50};
 std::unordered_map<Il2CppClass *, std::set<Il2CppObject *>> HookerData::collectSet{};
 
+void to_json(nlohmann::ordered_json &j, const SavedPatch &p)
+{
+    j = nlohmann::ordered_json{{"imageName", p.imageName},
+                               {"className", p.className},
+                               {"methodName", p.methodName},
+                               {"argsCount", p.argsCount},
+                               {"patchText", p.patchText}};
+}
+
+void from_json(const nlohmann::ordered_json &j, SavedPatch &p)
+{
+    j.at("imageName").get_to(p.imageName);
+    j.at("className").get_to(p.className);
+    j.at("methodName").get_to(p.methodName);
+    j.at("argsCount").get_to(p.argsCount);
+    j.at("patchText").get_to(p.patchText);
+}
+
 namespace Tool
 {
+    std::vector<SavedPatch> savedPatches;
     struct CallData
     {
         MethodInfo *method;
@@ -75,6 +95,157 @@ namespace Tool
         else
         {
             ConfigSave();
+        }
+    }
+
+    void LoadPatches()
+    {
+        LOGD(__FUNCTION__);
+        try
+        {
+            Util::FileReader patchesFile("saved_patches.json");
+            if (patchesFile.exists())
+            {
+                nlohmann::ordered_json j = nlohmann::ordered_json::parse(patchesFile.read());
+                savedPatches = j.template get<std::vector<SavedPatch>>();
+            }
+        }
+        catch (nlohmann::json::exception &e)
+        {
+            LOGE("Failed to load saved_patches.json: %s", e.what());
+        }
+    }
+
+    void SavePatches()
+    {
+        LOGD(__FUNCTION__);
+        Util::FileWriter patchesFile("saved_patches.json");
+        nlohmann::ordered_json j = savedPatches;
+        patchesFile.write(j.dump(2, ' ').c_str());
+    }
+
+    void AddSavedPatch(MethodInfo* method, const std::string& patchText)
+    {
+        auto klass = method->getClass();
+        auto image = klass->getImage();
+        std::string imageName = image->getName();
+        std::string className = klass->getFullName();
+        std::string methodName = method->getName();
+        size_t argsCount = method->getParamsInfo().size();
+
+        for (auto& p : savedPatches)
+        {
+            if (p.imageName == imageName && p.className == className &&
+                p.methodName == methodName && p.argsCount == argsCount)
+            {
+                p.patchText = patchText;
+                return;
+            }
+        }
+
+        savedPatches.push_back({imageName, className, methodName, argsCount, patchText});
+    }
+
+    void RemoveSavedPatch(MethodInfo* method)
+    {
+        auto klass = method->getClass();
+        auto image = klass->getImage();
+        std::string imageName = image->getName();
+        std::string className = klass->getFullName();
+        std::string methodName = method->getName();
+        size_t argsCount = method->getParamsInfo().size();
+
+        savedPatches.erase(std::remove_if(savedPatches.begin(), savedPatches.end(),
+            [&](const SavedPatch& p) {
+                return p.imageName == imageName && p.className == className &&
+                       p.methodName == methodName && p.argsCount == argsCount;
+            }), savedPatches.end());
+    }
+
+    void ApplySavedPatches()
+    {
+        LOGD(__FUNCTION__);
+        for (const auto& patch : savedPatches)
+        {
+            auto image = Il2cpp::GetImage(patch.imageName.c_str());
+            if (!image) continue;
+            auto klass = image->getClass(patch.className.c_str());
+            if (!klass) continue;
+            auto method = klass->getMethod(patch.methodName.c_str(), patch.argsCount);
+            if (!method) continue;
+
+            if (ClassesTab::oMap[method].bytes.empty() == false) continue; // Already patched
+            if (hookerMap.find(method->methodPointer) != hookerMap.end()) continue; // Hooked
+
+            auto type = method->getReturnType();
+            Patcher p{method};
+            std::string text = patch.patchText;
+
+            if (text == "NOP" && strcmp(type->getName(), "System.Void") == 0)
+            {
+                p.ret();
+            }
+            else if (strcmp(type->getName(), "System.Boolean") == 0)
+            {
+                p.movBool(text == "True");
+                p.ret();
+            }
+            else if (strcmp(type->getName(), "System.Int16") == 0)
+            {
+                p.movInt16(std::stoi(text));
+                p.ret();
+            }
+            else if (strcmp(type->getName(), "System.UInt16") == 0)
+            {
+                p.movUInt16(std::stoi(text));
+                p.ret();
+            }
+            else if (strcmp(type->getName(), "System.Int32") == 0)
+            {
+                p.movInt32(std::stoi(text));
+                p.ret();
+            }
+            else if (strcmp(type->getName(), "System.UInt32") == 0)
+            {
+                p.movUInt32(std::stoul(text));
+                p.ret();
+            }
+            else if (strcmp(type->getName(), "System.Int64") == 0)
+            {
+                p.movInt64(std::stol(text));
+                p.ret();
+            }
+            else if (strcmp(type->getName(), "System.UInt64") == 0)
+            {
+                p.movUInt64(std::stoul(text));
+                p.ret();
+            }
+            else if (strcmp(type->getName(), "System.Single") == 0)
+            {
+                p.movFloat(std::stof(text));
+                p.ret();
+            }
+            else if (strcmp(type->getName(), "System.String") == 0)
+            {
+                p.movPtr(Il2cpp::NewString(text.c_str()));
+                p.ret();
+            }
+            else if (type->isEnum())
+            {
+                auto field = type->getClass()->getField(text.c_str());
+                if (field) {
+                    p.movInt16(field->getStaticValue<int>());
+                    p.ret();
+                } else {
+                    continue; // invalid enum field
+                }
+            } else {
+                continue; // unsupported
+            }
+
+            ClassesTab::oMap[method].bytes = p.patch();
+            ClassesTab::oMap[method].text = text;
+            LOGD("Applied saved patch to %s::%s", patch.className.c_str(), patch.methodName.c_str());
         }
     }
 
