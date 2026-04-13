@@ -1,0 +1,129 @@
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:processDebugJavaRes NO-SOURCE
+> Task :app:mergeDebugJavaResource UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:dexBuilderDebug UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :app:mergeDexDebug UP-TO-DATE
+> Task :app:configureCMakeDebug[arm64-v8a]
+
+> Task :app:buildCMakeDebug[arm64-v8a]
+C/C++: ninja: Entering directory `/app/app/.cxx/Debug/3b1i6f02/arm64-v8a'
+C/C++: clang++: warning: argument unused during compilation: '-s' [-Wunused-command-line-argument]
+C/C++: In file included from /app/app/src/main/jni/Tool/Tool.cpp:6:
+C/C++: In file included from /app/app/src/main/jni/Tool/Patcher.h:4:
+C/C++: In file included from /app/app/src/main/jni/asmjit/src/asmjit/a64.h:51:
+C/C++: In file included from /app/app/src/main/jni/asmjit/src/asmjit/./arm/a64assembler.h:10:
+C/C++: In file included from /app/app/src/main/jni/asmjit/src/asmjit/./arm/../arm/a64emitter.h:12:
+C/C++: /app/app/src/main/jni/asmjit/src/asmjit/./arm/../arm/a64operand.h:126:111: warning: bitwise operation between different enumeration types ('asmjit::BaseReg::(unnamed enum at /app/app/src/main/jni/asmjit/src/asmjit/./arm/../core/operand.h:865:3)' and 'asmjit::arm::BaseVec::AdditionalBits') is deprecated [-Wdeprecated-anon-enum-enum-conversion]
+C/C++:   ASMJIT_INLINE_NODEBUG constexpr bool isVecB8() const noexcept { return _signature.subset(kBaseSignatureMask | kSignatureRegElementTypeMask) == (RegTraits<RegType::kARM_VecD>::kSignature | kSignatureElementB); }
+C/C++:                                                                                            ~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /app/app/src/main/jni/asmjit/src/asmjit/./arm/../arm/a64operand.h:127:111: warning: bitwise operation between different enumeration types ('asmjit::BaseReg::(unnamed enum at /app/app/src/main/jni/asmjit/src/asmjit/./arm/../core/operand.h:865:3)' and 'asmjit::arm::BaseVec::AdditionalBits') is deprecated [-Wdeprecated-anon-enum-enum-conversion]
+C/C++:   ASMJIT_INLINE_NODEBUG constexpr bool isVecH4() const noexcept { return _signature.subset(kBaseSignatureMask | kSignatureRegElementTypeMask) == (RegTraits<RegType::kARM_VecD>::kSignature | kSignatureElementH); }
+C/C++:                                                                                            ~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /app/app/src/main/jni/asmjit/src/asmjit/./arm/../arm/a64operand.h:128:111: warning: bitwise operation between different enumeration types ('asmjit::BaseReg::(unnamed enum at /app/app/src/main/jni/asmjit/src/asmjit/./arm/../core/operand.h:865:3)' and 'asmjit::arm::BaseVec::AdditionalBits') is deprecated [-Wdeprecated-anon-enum-enum-conversion]
+C/C++:   ASMJIT_INLINE_NODEBUG constexpr bool isVecS2() const noexcept { return _signature.subset(kBaseSignatureMask | kSignatureRegElementTypeMask) == (RegTraits<RegType::kARM_VecD>::kSignature | kSignatureElementS); }
+C/C++:                                                                                            ~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /app/app/src/main/jni/asmjit/src/asmjit/./arm/../arm/a64operand.h:129:111: warning: bitwise operation between different enumeration types ('asmjit::BaseReg::(unnamed enum at /app/app/src/main/jni/asmjit/src/asmjit/./arm/../core/operand.h:865:3)' and 'asmjit::arm::BaseVec::AdditionalBits') is deprecated [-Wdeprecated-anon-enum-enum-conversion]
+C/C++:   ASMJIT_INLINE_NODEBUG constexpr bool isVecD1() const noexcept { return _signature.subset(kBaseSignatureMask | kSignatureRegElementTypeMask) == (RegTraits<RegType::kARM_VecD>::kSignature); }
+C/C++:                                                                                            ~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /app/app/src/main/jni/asmjit/src/asmjit/./arm/../arm/a64operand.h:131:112: warning: bitwise operation between different enumeration types ('asmjit::BaseReg::(unnamed enum at /app/app/src/main/jni/asmjit/src/asmjit/./arm/../core/operand.h:865:3)' and 'asmjit::arm::BaseVec::AdditionalBits') is deprecated [-Wdeprecated-anon-enum-enum-conversion]
+C/C++:   ASMJIT_INLINE_NODEBUG constexpr bool isVecB16() const noexcept { return _signature.subset(kBaseSignatureMask | kSignatureRegElementTypeMask) == (RegTraits<RegType::kARM_VecV>::kSignature | kSignatureElementB); }
+C/C++:                                                                                             ~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /app/app/src/main/jni/asmjit/src/asmjit/./arm/../arm/a64operand.h:132:111: warning: bitwise operation between different enumeration types ('asmjit::BaseReg::(unnamed enum at /app/app/src/main/jni/asmjit/src/asmjit/./arm/../core/operand.h:865:3)' and 'asmjit::arm::BaseVec::AdditionalBits') is deprecated [-Wdeprecated-anon-enum-enum-conversion]
+C/C++:   ASMJIT_INLINE_NODEBUG constexpr bool isVecH8() const noexcept { return _signature.subset(kBaseSignatureMask | kSignatureRegElementTypeMask) == (RegTraits<RegType::kARM_VecV>::kSignature | kSignatureElementH); }
+C/C++:                                                                                            ~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /app/app/src/main/jni/asmjit/src/asmjit/./arm/../arm/a64operand.h:133:111: warning: bitwise operation between different enumeration types ('asmjit::BaseReg::(unnamed enum at /app/app/src/main/jni/asmjit/src/asmjit/./arm/../core/operand.h:865:3)' and 'asmjit::arm::BaseVec::AdditionalBits') is deprecated [-Wdeprecated-anon-enum-enum-conversion]
+C/C++:   ASMJIT_INLINE_NODEBUG constexpr bool isVecS4() const noexcept { return _signature.subset(kBaseSignatureMask | kSignatureRegElementTypeMask) == (RegTraits<RegType::kARM_VecV>::kSignature | kSignatureElementS); }
+C/C++:                                                                                            ~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /app/app/src/main/jni/asmjit/src/asmjit/./arm/../arm/a64operand.h:134:111: warning: bitwise operation between different enumeration types ('asmjit::BaseReg::(unnamed enum at /app/app/src/main/jni/asmjit/src/asmjit/./arm/../core/operand.h:865:3)' and 'asmjit::arm::BaseVec::AdditionalBits') is deprecated [-Wdeprecated-anon-enum-enum-conversion]
+C/C++:   ASMJIT_INLINE_NODEBUG constexpr bool isVecD2() const noexcept { return _signature.subset(kBaseSignatureMask | kSignatureRegElementTypeMask) == (RegTraits<RegType::kARM_VecV>::kSignature | kSignatureElementD); }
+C/C++:                                                                                            ~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /app/app/src/main/jni/asmjit/src/asmjit/./arm/../arm/a64operand.h:135:113: warning: bitwise operation between different enumeration types ('asmjit::BaseReg::(unnamed enum at /app/app/src/main/jni/asmjit/src/asmjit/./arm/../core/operand.h:865:3)' and 'asmjit::arm::BaseVec::AdditionalBits') is deprecated [-Wdeprecated-anon-enum-enum-conversion]
+C/C++:   ASMJIT_INLINE_NODEBUG constexpr bool isVecB4x4() const noexcept { return _signature.subset(kBaseSignatureMask | kSignatureRegElementTypeMask) == (RegTraits<RegType::kARM_VecV>::kSignature | kSignatureElementB4); }
+C/C++:                                                                                              ~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /app/app/src/main/jni/asmjit/src/asmjit/./arm/../arm/a64operand.h:136:113: warning: bitwise operation between different enumeration types ('asmjit::BaseReg::(unnamed enum at /app/app/src/main/jni/asmjit/src/asmjit/./arm/../core/operand.h:865:3)' and 'asmjit::arm::BaseVec::AdditionalBits') is deprecated [-Wdeprecated-anon-enum-enum-conversion]
+C/C++:   ASMJIT_INLINE_NODEBUG constexpr bool isVecH2x4() const noexcept { return _signature.subset(kBaseSignatureMask | kSignatureRegElementTypeMask) == (RegTraits<RegType::kARM_VecV>::kSignature | kSignatureElementH2); }
+C/C++:                                                                                              ~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: In file included from /app/app/src/main/jni/Tool/Tool.cpp:1:
+C/C++: In file included from /app/app/src/main/jni/Tool/Tool.h:3:
+C/C++: /app/app/src/main/jni/Includes/circular_buffer.h:33:4: warning: initializer order does not match the declaration order [-Wreorder-ctor]
+C/C++:                  _max_size{other._max_size},
+C/C++:                  ^~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++:                  _head{other._head}
+C/C++: /opt/android-sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/utility:309:5: note: in instantiation of member function 'CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>::CircularBuffer' requested here
+C/C++:     pair(pair const&) = default;
+C/C++:     ^
+C/C++: /opt/android-sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/memory:1605:14: note: in instantiation of function template specialization 'std::allocator_traits<std::allocator<std::__hash_node<std::__hash_value_type<MethodInfo *, CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>>, void *>>>::__construct<std::pair<MethodInfo *const, CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>>, const std::pair<MethodInfo *const, CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>> &>' requested here
+C/C++:             {__construct(__has_construct<allocator_type, _Tp*, _Args...>(),
+C/C++:              ^
+C/C++: /opt/android-sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/__hash_table:2544:20: note: in instantiation of function template specialization 'std::allocator_traits<std::allocator<std::__hash_node<std::__hash_value_type<MethodInfo *, CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>>, void *>>>::construct<std::pair<MethodInfo *const, CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>>, const std::pair<MethodInfo *const, CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>> &>' requested here
+C/C++:     __node_traits::construct(__na, _NodeTypes::__get_ptr(__h->__value_),
+C/C++:                    ^
+C/C++: /opt/android-sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/__hash_table:2127:29: note: in instantiation of function template specialization 'std::__hash_table<std::__hash_value_type<MethodInfo *, CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>>, std::__unordered_map_hasher<MethodInfo *, std::__hash_value_type<MethodInfo *, CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>>, std::hash<MethodInfo *>, true>, std::__unordered_map_equal<MethodInfo *, std::__hash_value_type<MethodInfo *, CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>>, std::equal_to<MethodInfo *>, true>, std::allocator<std::__hash_value_type<MethodInfo *, CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>>>>::__construct_node_hash<const std::pair<MethodInfo *const, CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>> &>' requested here
+C/C++:         __node_holder __h = __construct_node_hash(__hash, _VSTD::forward<_Args>(__args)...);
+C/C++:                             ^
+C/C++: /opt/android-sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/__hash_table:1165:16: note: in instantiation of function template specialization 'std::__hash_table<std::__hash_value_type<MethodInfo *, CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>>, std::__unordered_map_hasher<MethodInfo *, std::__hash_value_type<MethodInfo *, CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>>, std::hash<MethodInfo *>, true>, std::__unordered_map_equal<MethodInfo *, std::__hash_value_type<MethodInfo *, CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>>, std::equal_to<MethodInfo *>, true>, std::allocator<std::__hash_value_type<MethodInfo *, CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>>>>::__emplace_unique_key_args<MethodInfo *, const std::pair<MethodInfo *const, CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>> &>' requested here
+C/C++:         return __emplace_unique_key_args(_NodeTypes::__get_key(__x), __x);
+C/C++:                ^
+C/C++: /opt/android-sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/unordered_map:1624:18: note: (skipping 2 contexts in backtrace; use -ftemplate-backtrace-limit=0 to see all)
+C/C++:         __table_.__insert_unique(*__first);
+C/C++:                  ^
+C/C++: /app/app/src/main/jni/Tool/ClassesTab.h:7:8: note: in instantiation of member function 'std::unordered_map<MethodInfo *, CircularBuffer<std::pair<std::basic_string<char>, Il2CppObject *>>>::unordered_map' requested here
+C/C++: struct ClassesTab
+C/C++:        ^
+C/C++: /opt/android-sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/memory:1605:14: note: in instantiation of function template specialization 'std::allocator_traits<std::allocator<ClassesTab>>::__construct<ClassesTab, ClassesTab &>' requested here
+C/C++:             {__construct(__has_construct<allocator_type, _Tp*, _Args...>(),
+C/C++:              ^
+C/C++: /opt/android-sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/vector:924:21: note: in instantiation of function template specialization 'std::allocator_traits<std::allocator<ClassesTab>>::construct<ClassesTab, ClassesTab &>' requested here
+C/C++:     __alloc_traits::construct(this->__alloc(), _VSTD::__to_address(__tx.__pos_),
+C/C++:                     ^
+C/C++: /opt/android-sdk/ndk/25.2.9519653/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/c++/v1/vector:1683:9: note: in instantiation of function template specialization 'std::vector<ClassesTab>::__construct_one_at_end<ClassesTab &>' requested here
+C/C++:         __construct_one_at_end(_VSTD::forward<_Args>(__args)...);
+C/C++:         ^
+C/C++: /app/app/src/main/jni/Tool/Tool.cpp:328:28: note: in instantiation of function template specialization 'std::vector<ClassesTab>::emplace_back<ClassesTab &>' requested here
+C/C++:         return classesTabs.emplace_back(clone);
+C/C++:                            ^
+C/C++: /app/app/src/main/jni/Includes/circular_buffer.h:33:4: note: field '_max_size' will be initialized after field '_size'
+C/C++:                  _max_size{other._max_size},
+C/C++:                  ^~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /app/app/src/main/jni/Includes/circular_buffer.h:34:4: note: field '_size' will be initialized after field '_head'
+C/C++:                  _size{other._size},
+C/C++:                  ^~~~~~~~~~~~~~~~~~
+C/C++: 11 warnings generated.
+
+> Task :app:mergeDebugJniLibFolders
+> Task :app:mergeDebugNativeLibs
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:stripDebugDebugSymbols
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+
+BUILD SUCCESSFUL in 28s
+34 actionable tasks: 11 executed, 23 up-to-date

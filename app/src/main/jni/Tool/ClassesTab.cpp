@@ -567,8 +567,8 @@ void ClassesTab::CallerView(Il2CppClass *klass, MethodInfo *method, const Method
                 ImGui::GetID("ThisObjectSelector"), klass, "this",
                 [&thisParam](Il2CppObject *object)
                 {
-                    char objStr[16]{0};
-                    sprintf(objStr, "%p", object);
+                                    char objStr[128]{0};
+                                    sprintf(objStr, "%s [%p]", object->klass->getName(), object);
                     thisParam.value = objStr;
                     thisParam.object = object;
                     ImGui::CloseCurrentPopup();
@@ -635,8 +635,8 @@ void ClassesTab::CallerView(Il2CppClass *klass, MethodInfo *method, const Method
             ImGuiObjectSelector(ImGui::GetID("ParamObjectSelector"), type->getClass(), name,
                                 [&param](Il2CppObject *object)
                                 {
-                                    char objStr[16]{0};
-                                    sprintf(objStr, "%p", object);
+                                    char objStr[128]{0};
+                                    sprintf(objStr, "%s [%p]", object->klass->getName(), object);
                                     param.value = objStr;
                                     param.object = object;
                                     ImGui::CloseCurrentPopup();
@@ -909,6 +909,8 @@ void ClassesTab::PatcherView(Il2CppClass *klass, MethodInfo *method, const Metho
                 Patcher p{method};
                 p.ret();
                 o.bytes = p.patch();
+                Tool::AddSavedPatch(method, "NOP");
+                Tool::SavePatches();
             }
         }
         else
@@ -918,6 +920,8 @@ void ClassesTab::PatcherView(Il2CppClass *klass, MethodInfo *method, const Metho
                 memcpy(method->methodPointer, o.bytes.data(), o.bytes.size());
                 o.bytes.clear();
                 o.text.clear();
+                Tool::RemoveSavedPatch(method);
+                Tool::SavePatches();
             }
         }
     }
@@ -947,6 +951,8 @@ void ClassesTab::PatcherView(Il2CppClass *klass, MethodInfo *method, const Metho
                 memcpy(method->methodPointer, o.bytes.data(), o.bytes.size());
                 o.bytes.clear();
                 o.text.clear();
+                Tool::RemoveSavedPatch(method);
+                Tool::SavePatches();
             }
             else
             {
@@ -971,6 +977,8 @@ void ClassesTab::PatcherView(Il2CppClass *klass, MethodInfo *method, const Metho
                                        {
                                            oMap[method].bytes = p.patch();
                                            oMap[method].text = b;
+                                           Tool::AddSavedPatch(method, b);
+                                           Tool::SavePatches();
                                        }
                                        else
                                        {
@@ -1038,6 +1046,8 @@ void ClassesTab::PatcherView(Il2CppClass *klass, MethodInfo *method, const Metho
                                 {
                                     oMap[method].bytes = p.patch();
                                     oMap[method].text = text;
+                                    Tool::AddSavedPatch(method, text);
+                                    Tool::SavePatches();
                                 }
                                 else
                                 {
@@ -1063,6 +1073,8 @@ void ClassesTab::PatcherView(Il2CppClass *klass, MethodInfo *method, const Metho
                             {
                                 oMap[method].bytes = p.patch();
                                 oMap[method].text = result;
+                                Tool::AddSavedPatch(method, result);
+                                Tool::SavePatches();
                             }
                             else
                             {
