@@ -16,6 +16,8 @@
 #include "sstream"
 #include "jni.h"
 #include "Tool/Unity.h"
+#include "Tool/AntiFrida.h"
+#include "Tool/Frida.h"
 
 void logcatJson(nlohmann::ordered_json &json)
 {
@@ -31,6 +33,9 @@ void logcatJson(nlohmann::ordered_json &json)
 
 template <typename T>
 void ConfigSet(const char *key, T value);
+
+template <typename T>
+T ConfigGet(const char *key, T defaultValue);
 
 // Target lib here
 #define targetLibName OBFUSCATE("liblogic.so")
@@ -132,6 +137,20 @@ void draw_thread()
     {
         ImGui::PopStyleVar();
     }
+
+    if (!AntiFrida::is_frida_detected)
+    {
+        ImGui::TextColored(ImVec4(0, 1, 0, 1), "[+] Security: Safe (No Frida PC Detected)");
+    }
+    else
+    {
+        ImGui::TextColored(ImVec4(1, 0, 0, 1), "[!] WARNING: FRIDA SERVER/CLIENT DETECTED!");
+        if (ImGui::Button("Force Crash/Exit Game"))
+        {
+            exit(0);
+        }
+    }
+    ImGui::Separator();
 
 #ifdef __DEBUG__
     static bool showDemoWindow = false;
@@ -241,6 +260,98 @@ void draw_thread()
             Tool::Dumper();
             ImGui::EndTabItem();
         }
+
+        if (ImGui::BeginTabItem("Frida Scripts"))
+        {
+            static bool autoRunScripts = ConfigGet<bool>("autoRunScripts", false);
+            if (ImGui::Checkbox("Auto-Run on Init", &autoRunScripts))
+            {
+                ConfigSet("autoRunScripts", autoRunScripts);
+            }
+
+            ImGui::Separator();
+            ImGui::Text("Script Execution");
+
+            static std::vector<std::string> scriptFiles;
+            static int selectedScriptIndex = -1;
+
+            if (ImGui::Button("Refresh Scripts"))
+            {
+                scriptFiles.clear();
+                selectedScriptIndex = -1;
+                // TODO: Actual scanning in /sdcard/Download/Scripts/ using dirent or std::filesystem
+                // (Omitted for brevity, replace with actual dirent.h scan)
+                scriptFiles.push_back("/sdcard/Download/Scripts/example.js");
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::BeginCombo("##ScriptSelector", selectedScriptIndex >= 0 && selectedScriptIndex < scriptFiles.size() ? scriptFiles[selectedScriptIndex].c_str() : "Select Script..."))
+            {
+                for (int i = 0; i < scriptFiles.size(); i++)
+                {
+                    bool isSelected = (selectedScriptIndex == i);
+                    if (ImGui::Selectable(scriptFiles[i].c_str(), isSelected))
+                    {
+                        selectedScriptIndex = i;
+                    }
+                    if (isSelected)
+                    {
+                        ImGui::SetItemDefaultFocus();
+                    }
+                }
+                ImGui::EndCombo();
+            }
+
+            if (ImGui::Button("Run Selected Script"))
+            {
+                if (selectedScriptIndex >= 0 && selectedScriptIndex < scriptFiles.size())
+                {
+                    ConfigSet("lastScriptFile", scriptFiles[selectedScriptIndex]);
+                    Frida::ScriptManager::LoadScriptFromFile(scriptFiles[selectedScriptIndex]);
+                }
+            }
+
+            ImGui::Separator();
+            ImGui::Text("Raw Script Code");
+            static char rawScriptBuffer[4096] = "console.log('Hello from Frida!');";
+            ImGui::InputTextMultiline("##RawScript", rawScriptBuffer, sizeof(rawScriptBuffer), ImVec2(-1.0f, ImGui::GetTextLineHeight() * 8));
+            if (ImGui::Button("Run Raw Code"))
+            {
+                Frida::ScriptManager::LoadScriptFromRawCode(rawScriptBuffer);
+            }
+
+            ImGui::Separator();
+            ImGui::Text("Log Panel");
+            ImGui::SameLine();
+            if (ImGui::Button("Clear Log"))
+            {
+                Frida::ScriptManager::ClearLogs();
+            }
+
+            ImGui::BeginChild("LogPanel", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
+            {
+                std::lock_guard<std::mutex> lock(Frida::ScriptManager::log_mutex);
+                for (const auto& log : Frida::ScriptManager::frida_logs)
+                {
+                    if (log.find("[Error]") != std::string::npos) {
+                        ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "%s", log.c_str());
+                    } else if (log.find("[Send]") != std::string::npos) {
+                        ImGui::TextColored(ImVec4(0.4f, 1.0f, 0.4f, 1.0f), "%s", log.c_str());
+                    } else {
+                        ImGui::TextUnformatted(log.c_str());
+                    }
+                }
+                if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+                {
+                    ImGui::SetScrollHereY(1.0f);
+                }
+            }
+            ImGui::EndChild();
+
+            ImGui::EndTabItem();
+        }
+
         if (ImGui::BeginTabItem("Settings"))
         {
             ImGui::Separator();
@@ -448,6 +559,21 @@ void on_init()
     }
     doChangeScale = true;
 
+    // Initialize Frida Gum engine
+    Frida::ScriptManager::InitGum();
+
+    // Auto-run logic
+    bool autoRunScripts = ConfigGet<bool>("autoRunScripts", false);
+    if (autoRunScripts)
+    {
+        std::string lastScript = ConfigGet<std::string>("lastScriptFile", "");
+        if (!lastScript.empty())
+        {
+            Frida::ScriptManager::LoadScriptFromFile(lastScript);
+            LOGI("Auto-ran Frida script: %s", lastScript.c_str());
+        }
+    }
+
     LOGD("HOOKING...");
 
 #ifndef LIB_INPUT
@@ -530,6 +656,9 @@ extern "C"
 // Atribut constructor memastikan bahwa fungsi lib_main() dipanggil sesaat setelah shared library (so) di-load.
 __attribute__((constructor)) void lib_main()
 {
+    // Mulai memonitor Frida di background
+    AntiFrida::StartMonitor();
+
     // Membuat thread baru agar proses hacking tidak memblokir main thread game, sehingga game tidak akan freeze.
     pthread_t ptid;
     pthread_create(&ptid, nullptr, hack_thread, nullptr);
